@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="164" height="314" viewBox="0 0 164 314">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#D2714C"/>
+      <stop offset="1" stop-color="#A84C2F"/>
+    </linearGradient>
+  </defs>
+  <rect width="164" height="314" fill="url(#bg)"/>
+  <!-- large faint page watermark -->
+  <g opacity="0.10" fill="#FFFFFF">
+    <path d="M70 168h66l34 34v118H70z"/>
+  </g>
+  <g opacity="0.16" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round">
+    <path d="M88 228h58M88 252h58M88 276h38"/>
+  </g>
+  <!-- app mark -->
+  <g transform="translate(20 28)">
+    <rect width="40" height="40" rx="10" fill="#FFFFFF"/>
+    <path d="M13 9h10l6 6v15a2.5 2.5 0 0 1-2.5 2.5h-13.5A2.5 2.5 0 0 1 10.5 30V11.5A2.5 2.5 0 0 1 13 9Z" fill="#C4633F"/>
+    <path d="M14 20h11M14 24h11M14 28h7" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+  <text x="20" y="104" font-family="Inter" font-weight="650" font-size="27" letter-spacing="-0.6" fill="#FFFFFF">Folio</text>
+  <text x="20" y="127" font-family="Inter" font-weight="400" font-size="11.5" fill="#FFFFFF" fill-opacity="0.86">A calm place to read</text>
+  <text x="20" y="142" font-family="Inter" font-weight="400" font-size="11.5" fill="#FFFFFF" fill-opacity="0.86">and write Markdown.</text>
+</svg>

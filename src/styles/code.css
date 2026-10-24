@@ -1,0 +1,49 @@
+/* Syntax colors (highlight.js / lowlight) — light + dark */
+:root {
+  --hl-comment: #8d8a83;
+  --hl-keyword: #a3367f;
+  --hl-string: #3b7a3a;
+  --hl-number: #b45309;
+  --hl-title: #2e5fb3;
+  --hl-type: #8a5a00;
+  --hl-attr: #9a4c1c;
+  --hl-variable: #b23b3b;
+  --hl-meta: #6b6b6b;
+  --hl-tag: #2e5fb3;
+  --hl-addition-bg: rgba(46, 160, 67, 0.14);
+  --hl-deletion-bg: rgba(209, 69, 59, 0.12);
+}
+:root[data-theme='dark'] {
+  --hl-comment: #7f7b73;
+  --hl-keyword: #e48ac4;
+  --hl-string: #9ccf83;
+  --hl-number: #f2b26b;
+  --hl-title: #82aaff;
+  --hl-type: #e6c07b;
+  --hl-attr: #e9a272;
+  --hl-variable: #ef8f8a;
+  --hl-meta: #a29e96;
+  --hl-tag: #82aaff;
+  --hl-addition-bg: rgba(46, 160, 67, 0.2);
+  --hl-deletion-bg: rgba(229, 83, 75, 0.2);
+}
+@media print {
+  :root, :root[data-theme='dark'] {
+    --hl-comment: #8d8a83; --hl-keyword: #a3367f; --hl-string: #3b7a3a; --hl-number: #b45309; --hl-title: #2e5fb3;
+    --hl-type: #8a5a00; --hl-attr: #9a4c1c; --hl-variable: #b23b3b; --hl-meta: #6b6b6b; --hl-tag: #2e5fb3;
+  }
+}
+.hljs-comment, .hljs-quote { color: var(--hl-comment); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag, .hljs-section { color: var(--hl-keyword); }
+.hljs-string, .hljs-regexp, .hljs-template-tag, .hljs-symbol, .hljs-bullet { color: var(--hl-string); }
+.hljs-number, .hljs-built_in, .hljs-link { color: var(--hl-number); }
+.hljs-title, .hljs-title.function_, .hljs-function .hljs-title { color: var(--hl-title); }
+.hljs-type, .hljs-class .hljs-title, .hljs-title.class_ { color: var(--hl-type); }
+.hljs-attr, .hljs-attribute, .hljs-property, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id { color: var(--hl-attr); }
+.hljs-variable, .hljs-template-variable, .hljs-params { color: var(--hl-variable); }
+.hljs-meta, .hljs-meta .hljs-keyword { color: var(--hl-meta); }
+.hljs-name, .hljs-tag { color: var(--hl-tag); }
+.hljs-addition { background: var(--hl-addition-bg); }
+.hljs-deletion { background: var(--hl-deletion-bg); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }

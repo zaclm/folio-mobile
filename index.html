@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' folio:; img-src 'self' folio: data: blob: https: http:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; connect-src 'self' folio:; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none';" />
+    <title>Folio</title>
+  </head>
+  <body>
+    <div id="app" class="app" data-mode="read" data-editview="visual">
+      <header class="titlebar">
+        <div class="tb-side left">
+          <button class="icon-btn" id="btn-sidebar" data-tip="Toggle sidebar (Ctrl \)" aria-label="Toggle sidebar"></button>
+          <div class="crumb" id="crumb"></div>
+        </div>
+        <div class="mode-switch" id="mode-switch" role="tablist" aria-label="Mode">
+          <button class="mode-btn active" data-mode="read" role="tab" aria-selected="true" data-tip="Read (Ctrl 1)"><span class="mode-ic" data-ic="BookOpen"></span>Read</button>
+          <button class="mode-btn" data-mode="edit" role="tab" aria-selected="false" data-tip="Edit (Ctrl 2)"><span class="mode-ic" data-ic="PenLine"></span>Edit</button>
+          <span class="mode-thumb"></span>
+        </div>
+        <div class="tb-side right">
+          <button class="close-page" id="btn-close" data-tip="Close page and go home (Ctrl W)" aria-label="Close page"></button>
+          <button class="icon-btn" id="btn-theme" data-tip="Light / dark" aria-label="Toggle theme"></button>
+        </div>
+      </header>
+
+      <div class="body">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main">
+          <div class="toolbar" id="toolbar-read">
+            <div class="tb-left"></div>
+            <div class="tb-pill"></div>
+            <div class="tb-right"></div>
+          </div>
+          <div class="toolbar" id="toolbar-edit">
+            <div class="tb-left"></div>
+            <div class="tb-pill"></div>
+            <div class="tb-right"></div>
+          </div>
+
+          <div class="banner" id="banner"></div>
+          <div class="findbar" id="findbar"></div>
+
+          <div class="content" id="scroll">
+            <div class="doc-area">
+              <div class="welcome" id="welcome"></div>
+              <article class="doc prose" id="reader"></article>
+              <div class="doc editor-wrap" id="editor-wrap">
+                <div id="editor"></div>
+                <textarea id="source" class="source" spellcheck="true" wrap="soft" aria-label="Markdown source"></textarea>
+              </div>
+            </div>
+            <nav class="outline" id="outline" aria-label="Outline"></nav>
+          </div>
+        </main>
+      </div>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <script type="module" src="./src/boot-icons.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

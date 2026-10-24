@@ -1,0 +1,40 @@
+FOLIO - END USER LICENSE AGREEMENT
+Version 1.0 - October 2026
+
+Please read this agreement before installing Folio. By clicking "I Agree" or by installing or using Folio, you accept these terms. If you do not accept them, click "Cancel".
+
+1. WHO THIS IS BETWEEN
+This agreement is between you and Zac, the author of Folio ("the Author"). "Folio" means the Folio desktop application, its installer and any updates.
+
+2. WHAT YOU MAY DO
+The Author grants you a free, non-exclusive, worldwide licence to install and use Folio on any number of computers, for personal or commercial work.
+
+3. WHAT YOU MAY NOT DO
+You may not:
+  a) sell, rent or sublicense Folio, or charge others for it;
+  b) distribute modified copies of Folio, or present a modified copy as the original or as made by the Author;
+  c) remove or change the Folio name, logo, copyright notices or this agreement;
+  d) use Folio for any unlawful purpose.
+
+4. YOUR FILES AND PRIVACY
+Folio works with files on your own computer. It has no account, sends no telemetry and does not upload your documents anywhere. Images that a document links to on the web are loaded from those websites when you open the document. You are responsible for keeping backups of your files.
+
+5. OWNERSHIP
+Folio, its name, logo and design are owned by the Author. This agreement gives you a licence to use Folio; it does not transfer ownership.
+
+6. THIRD-PARTY SOFTWARE
+Folio includes open-source components, each under its own licence, including Electron and Chromium (MIT and BSD-style licences), Tiptap, ProseMirror, markdown-it, DOMPurify, highlight.js, KaTeX, Mermaid and Lucide (MIT, Apache-2.0 or ISC licences), and the Inter, Source Serif 4 and JetBrains Mono fonts (SIL Open Font License 1.1). The full licence texts for Electron and Chromium are installed alongside Folio in "LICENSE.electron.txt" and "LICENSES.chromium.html". Nothing in this agreement limits your rights under those licences.
+
+7. NO WARRANTY
+Folio is provided "AS IS", without warranty of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose and non-infringement. You use Folio at your own risk.
+
+8. LIMITATION OF LIABILITY
+To the maximum extent permitted by law, the Author is not liable for any damages arising from the use of, or inability to use, Folio, including loss of data, profits or business, even if advised of the possibility of such damages.
+
+9. ENDING THIS AGREEMENT
+This agreement ends automatically if you break its terms. When it ends you must stop using Folio and remove it from your computers. You may end it at any time by uninstalling Folio.
+
+10. GENERAL
+If any part of this agreement cannot be enforced, the rest still applies. This is the entire agreement between you and the Author about Folio.
+
+Copyright (c) 2026 Zac. All rights reserved.
