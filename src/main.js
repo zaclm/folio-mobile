@@ -9,7 +9,7 @@ import './styles/code.css';
 import { EditorState } from '@tiptap/pm/state';
 import {
   $, $$, h, icon, escapeHtml, debounce, toast, promptDialog, confirmDialog, showMenu, closeMenu,
-  basename, dirname, stripExt, extname, joinPath, samePath, isInside, resolveFrom, isAbsolute, countWords, formatNumber, SEP,
+  basename, dirname, stripExt, extname, joinPath, samePath, isInside, resolveFrom, isAbsolute, countWords, formatNumber, SEP, IS_MOBILE,
 } from './util.js';
 import { splitFrontMatter, detectUnsupported, outlineFromBody } from './markdown.js';
 import { renderReader, toggleTaskInSource, buildOutline, updateOutlineActive } from './reader.js';
@@ -291,6 +291,7 @@ async function openFile(p, { mode, keepScroll = false, silent = false } = {}) {
   el.scroll.scrollTop = keepScroll ? prevScroll : 0;
   updateWordCount();
   saveSetting({ lastFile: p });
+  if (IS_MOBILE) setDrawer(false);
 }
 
 function closeFile() {
@@ -541,8 +542,10 @@ async function renamePath(p, isDir) {
 async function deletePath(p, isDir) {
   const ok = await confirmDialog({
     title: isDir ? `Delete folder “${basename(p)}”?` : `Delete “${stripExt(basename(p))}”?`,
-    message: isDir ? 'The folder and everything inside it will be moved to the Recycle Bin.' : 'The file will be moved to the Recycle Bin. You can restore it from there.',
-    okLabel: 'Move to Recycle Bin', danger: true,
+    message: IS_MOBILE
+      ? (isDir ? 'The folder and everything inside it will be moved to Folio’s trash.' : 'The page will be moved to Folio’s trash.')
+      : (isDir ? 'The folder and everything inside it will be moved to the Recycle Bin.' : 'The file will be moved to the Recycle Bin. You can restore it from there.'),
+    okLabel: IS_MOBILE ? 'Delete' : 'Move to Recycle Bin', danger: true,
   });
   if (!ok) return;
   try {
@@ -552,7 +555,7 @@ async function deletePath(p, isDir) {
     forgetRecent(p);
     if (affectsCurrent) closeFile();
     await refreshTree();
-    toast('Moved to Recycle Bin');
+    toast(IS_MOBILE ? 'Moved to Folio’s trash' : 'Moved to Recycle Bin');
   } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -669,8 +672,28 @@ function logoSvg() {
 // ---------------------------------------------------------------- read toolbar
 function buildReadToolbar() {
   const pill = el.tbRead.querySelector('.tb-pill');
-  const b = (id, ic, tip) => `<button class="tb-btn" data-r="${id}" data-tip="${escapeHtml(tip)}">${icon(ic, 17)}</button>`;
-  pill.innerHTML = `
+  const b = (id, ic, tip) => `<button class="tb-btn" data-r="${id}" data-tip="${escapeHtml(tip)}" aria-label="${escapeHtml(tip)}">${icon(ic, 17)}</button>`;
+  // phones: the tools people reach for first come first (the pill scrolls sideways)
+  if (IS_MOBILE) pill.innerHTML = `
+    <div class="tb-group">${b('outline', 'TableOfContents', 'On this page')}</div>
+    <div class="tb-sep"></div>
+    <div class="tb-group">
+      ${b('find', 'Search', 'Find in page')}
+      ${b('export', 'Share2', 'Share / export')}
+    </div>
+    <div class="tb-sep"></div>
+    <div class="tb-group">
+      ${b('smaller', 'AArrowDown', 'Smaller text')}
+      <span class="tb-num" id="size-label">16</span>
+      ${b('bigger', 'AArrowUp', 'Larger text')}
+    </div>
+    <div class="tb-sep"></div>
+    <div class="tb-group seg" data-seg="font">
+      <button class="seg-btn" data-font="sans">Sans</button>
+      <button class="seg-btn serif" data-font="serif">Serif</button>
+    </div>
+  `;
+  else pill.innerHTML = `
     <div class="tb-group">${b('outline', 'TableOfContents', 'Show outline')}</div>
     <div class="tb-sep"></div>
     <div class="tb-group seg" data-seg="font">
@@ -699,12 +722,22 @@ function buildReadToolbar() {
     const t = e.target.closest('[data-r]');
     if (!t) return;
     const a = t.dataset.r;
+    if (a === 'outline' && IS_MOBILE) { toggleOutlineSheet(); return; }
     if (a === 'outline') { await saveSetting({ outline: !setting('outline') }); applyLook(); }
     if (a === 'smaller') changeSize(-1);
     if (a === 'bigger') changeSize(1);
     if (a === 'width') { await saveSetting({ wide: !setting('wide') }); applyLook(); }
     if (a === 'find') find.open();
     if (a === 'copy') { await navigator.clipboard.writeText(S.text); toast('Markdown copied to clipboard'); }
+    if (a === 'export' && IS_MOBILE) {
+      showMenu([
+        { label: 'Share page…', icon: 'Share2', action: () => api.share(S.file) },
+        { label: 'Copy as Markdown', icon: 'Copy', action: async () => { await navigator.clipboard.writeText(S.text); toast('Markdown copied'); } },
+        { label: 'Save as PDF / print…', icon: 'FileText', action: exportPdf },
+        { label: 'Export as HTML', icon: 'FileCode', action: exportHtml },
+      ], { anchor: t, align: 'right', minWidth: 220 });
+      return;
+    }
     if (a === 'export') {
       showMenu([
         { label: 'Export as PDF…', icon: 'FileText', action: exportPdf },
@@ -760,8 +793,8 @@ function buildEditExtras() {
   const right = el.tbEdit.querySelector('.tb-right');
   right.innerHTML = `
     <div class="seg small" id="view-switch">
-      <button class="seg-btn" data-view="visual" data-tip="Visual editor">Visual</button>
-      <button class="seg-btn" data-view="source" data-tip="Raw Markdown (Ctrl Shift M)">Markdown</button>
+      <button class="seg-btn" data-view="visual" data-tip="Visual editor" aria-label="Visual editor">${IS_MOBILE ? 'Aa' : 'Visual'}</button>
+      <button class="seg-btn" data-view="source" data-tip="Raw Markdown (Ctrl Shift M)" aria-label="Raw Markdown">${IS_MOBILE ? 'MD' : 'Markdown'}</button>
     </div>`;
   right.addEventListener('click', (e) => {
     const b = e.target.closest('[data-view]');
@@ -875,14 +908,15 @@ function openSettings(anchor) {
     { label: 'Open in Edit', icon: 'PenLine', checked: setting('openIn') === 'edit', action: () => saveSetting({ openIn: 'edit' }) },
     { label: 'Keep last tab', icon: 'Clock', checked: setting('openIn') === 'last', action: () => saveSetting({ openIn: 'last' }) },
     'sep',
-    { header: 'Page' },
-    { label: 'Close button (Ctrl W)', icon: 'X', checked: setting('closeButton'), action: () => saveSetting({ closeButton: !setting('closeButton') }).then(applyLook) },
-    'sep',
+    ...(IS_MOBILE ? [] : [
+      { header: 'Page' },
+      { label: 'Close button (Ctrl W)', icon: 'X', checked: setting('closeButton'), action: () => saveSetting({ closeButton: !setting('closeButton') }).then(applyLook) },
+      'sep',
+    ]),
     { header: 'Editing' },
     { label: 'Auto-save', icon: 'Save', checked: setting('autosave'), action: () => saveSetting({ autosave: !setting('autosave') }).then(() => setSaveState(S.saveState)) },
     { label: 'Spell check', icon: 'Type', checked: setting('spellcheck'), action: () => saveSetting({ spellcheck: !setting('spellcheck') }).then(applyLook) },
-    'sep',
-    { label: 'Keyboard shortcuts', icon: 'Command', action: showShortcuts },
+    ...(IS_MOBILE ? [] : ['sep', { label: 'Keyboard shortcuts', icon: 'Command', action: showShortcuts }]),
   ], { anchor, minWidth: 230, className: 'settings-menu' });
 }
 function rerenderForTheme() { if (S.file && S.mode === 'read') renderRead(); }
@@ -1010,6 +1044,49 @@ function initWatchers() {
   });
 }
 
+// ---------------------------------------------------------------- phone
+// The sidebar is a drawer, the outline a sheet, and Android's back gesture closes things in order.
+function setDrawer(open) {
+  el.app.classList.toggle('drawer-open', !!open);
+  if (open) { closeMenu(); setOutlineSheet(false); editor?.commands.blur(); }
+}
+function setOutlineSheet(open) { el.app.classList.toggle('outline-open', !!open); }
+function toggleOutlineSheet() {
+  if (!S.outlineHeads.length) { toast('This page has no headings'); return; }
+  setOutlineSheet(!el.app.classList.contains('outline-open'));
+}
+
+function initPhone() {
+  const scrim = h('<div class="drawer-scrim" aria-hidden="true"></div>');
+  el.app.appendChild(scrim);
+  scrim.addEventListener('click', () => { setDrawer(false); setOutlineSheet(false); });
+  // picking a heading in the outline sheet closes it
+  el.outline.addEventListener('click', (e) => { if (e.target.closest('.ol-item')) setOutlineSheet(false); });
+
+  // keep the caret visible when the keyboard opens and the page gets shorter
+  window.addEventListener('resize', debounce(() => {
+    if (S.mode === 'edit' && S.editView === 'visual' && editor?.isFocused) editor.commands.scrollIntoView();
+  }, 120));
+
+  api.onBack(() => {
+    const backdrop = $$('.modal-backdrop').pop();
+    if (backdrop) { backdrop.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); return true; }
+    const lightbox = $('.lightbox');
+    if (lightbox) { lightbox.click(); return true; }
+    if ($('.menu')) { closeMenu(); return true; }
+    if ($('.slash-menu.show') && editor) {
+      editor.view.dom.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      return true;
+    }
+    if (find.isOpen()) { find.close(); return true; }
+    if (el.app.classList.contains('outline-open')) { setOutlineSheet(false); return true; }
+    if (el.app.classList.contains('drawer-open')) { setDrawer(false); return true; }
+    if (S.file && S.mode === 'edit') { setMode('read'); return true; }
+    if (S.file) { closePage(); return true; }
+    return false;
+  });
+}
+
 // ---------------------------------------------------------------- boot
 let sidebar;
 let find;
@@ -1026,7 +1103,10 @@ async function boot() {
     if (b) setMode(b.dataset.mode);
   });
   $('#btn-close').addEventListener('click', () => closePage());
-  $('#btn-sidebar').addEventListener('click', () => saveSetting({ sidebar: !setting('sidebar') }).then(applyLook));
+  $('#btn-sidebar').addEventListener('click', () => {
+    if (IS_MOBILE) { setDrawer(!el.app.classList.contains('drawer-open')); return; }
+    saveSetting({ sidebar: !setting('sidebar') }).then(applyLook);
+  });
   $('#btn-theme').addEventListener('click', () => {
     const next = S.theme === 'dark' ? 'light' : 'dark';
     saveSetting({ theme: next }).then(rerenderForTheme);
@@ -1052,7 +1132,7 @@ async function boot() {
     onRename: renamePath,
     onDelete: deletePath,
     onDuplicate: duplicatePath,
-    onReveal: (p) => api.showInFolder(p),
+    onReveal: IS_MOBILE ? null : (p) => api.showInFolder(p),
     onForgetRecent: forgetRecent,
     onSettings: openSettings,
     onQuickOpen: quickOpen,
@@ -1078,8 +1158,9 @@ async function boot() {
   }, { passive: false }));
   initEditor();
   initSource();
-  initTooltips();
+  if (!IS_MOBILE) initTooltips();
   initShortcuts();
+  if (IS_MOBILE) initPhone();
   initDrop();
   initWatchers();
   applyLook();

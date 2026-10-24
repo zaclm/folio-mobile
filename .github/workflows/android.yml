@@ -1,0 +1,132 @@
+name: Android APK
+
+# Builds Folio for Android on every push to main and publishes the APK as a GitHub release.
+# Download the newest one from: https://github.com/<owner>/<repo>/releases/latest
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'signing/**', 'electron/**', 'build/installer/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write # publish the release
+  checks: write   # post build errors as a readable check run
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1' # the phone build doesn't need Electron
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - uses: android-actions/setup-android@v3
+
+      # Until the FOLIO_KEYSTORE_B64 secret exists the APK is signed with a debug key; keeping that key
+      # between runs lets each new APK install over the previous one.
+      - name: Keep the debug signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: folio-debug-keystore
+
+      - name: Version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "FOLIO_VERSION_NAME=${VERSION}" >> "$GITHUB_ENV"
+          echo "FOLIO_VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+          echo "FOLIO_TAG=android-v${VERSION}-build.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+
+      - name: Release signing key
+        env:
+          FOLIO_KEYSTORE_B64: ${{ secrets.FOLIO_KEYSTORE_B64 }}
+          FOLIO_KEYSTORE_PASSWORD: ${{ secrets.FOLIO_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -n "$FOLIO_KEYSTORE_B64" ] && [ -n "$FOLIO_KEYSTORE_PASSWORD" ]; then
+            echo "$FOLIO_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/folio-release.jks"
+            echo "FOLIO_KEYSTORE=$RUNNER_TEMP/folio-release.jks" >> "$GITHUB_ENV"
+            echo "FOLIO_SIGNED=release" >> "$GITHUB_ENV"
+            echo "Signing with the release key"
+          else
+            echo "FOLIO_SIGNED=debug" >> "$GITHUB_ENV"
+            echo "::warning::No FOLIO_KEYSTORE_B64 secret: signing with a debug key"
+          fi
+
+      - run: npm ci
+
+      - name: Build the web app
+        run: npm run build:mobile
+
+      - name: Copy it into the Android project
+        run: npx cap sync android
+
+      - name: Build the APK
+        working-directory: android
+        env:
+          FOLIO_KEYSTORE_PASSWORD: ${{ secrets.FOLIO_KEYSTORE_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          set -o pipefail
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+
+      # Public check run with the compiler errors, so they can be read without signing in
+      - name: Report build errors
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let log = '';
+            try { log = fs.readFileSync(`${process.env.RUNNER_TEMP}/gradle.log`, 'utf8'); } catch {}
+            const lines = log.split('\n');
+            const errors = lines.filter((l) => /error:|warning: \[|What went wrong|Execution failed|FAILURE|\.java:\d+|\.kt:\d+|AAPT|Could not/.test(l)).slice(0, 150);
+            const text = `${errors.join('\n')}\n\n----- last lines -----\n${lines.slice(-180).join('\n')}`.slice(-60000);
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Android build log',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'failure',
+              output: { title: log ? 'Gradle build failed' : 'Failed before Gradle', summary: 'Errors from the Android build', text: text || 'No Gradle log' },
+            });
+
+      - name: Collect the APK
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/release/app-release.apk out/Folio.apk
+          ls -l out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Folio-${{ env.FOLIO_VERSION_NAME }}-build.${{ github.run_number }}
+          path: out/Folio.apk
+
+      - name: Publish the release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.FOLIO_TAG }}
+          target_commitish: ${{ github.sha }}
+          name: Folio for Android ${{ env.FOLIO_VERSION_NAME }} (build ${{ github.run_number }})
+          make_latest: true
+          files: out/Folio.apk
+          body: |
+            **Install:** open this page on your phone, tap **Folio.apk**, then allow your browser to install apps if Android asks.
+            Signed with the ${{ env.FOLIO_SIGNED }} key. Commit: ${{ github.sha }}

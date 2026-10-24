@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Folio page background (matches --bg in src/styles/app.css) -->
+    <color name="folio_bg">#FFFFFF</color>
+    <color name="colorPrimary">#C4633F</color>
+    <color name="colorPrimaryDark">#B0552F</color>
+    <color name="colorAccent">#C4633F</color>
+</resources>

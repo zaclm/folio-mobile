@@ -1,0 +1,221 @@
+/* Folio on phones. Loaded only by the mobile build (mobile/entry.js); everything is scoped to
+   html.mobile so the desktop app is untouched. Typography stays in src/styles/prose.css. */
+
+html.mobile {
+  --tb-h: 52px;
+  --sb-w: min(86vw, 330px);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+.mobile body { overscroll-behavior: none; }
+.mobile .app { height: 100%; }
+.mobile button { touch-action: manipulation; }
+.mobile kbd, .mobile .mi-kbd, .mobile .pal-foot { display: none !important; }
+
+/* ---------- titlebar: ☰  [Read | Edit]  ✕ ---------- */
+.mobile .titlebar {
+  padding: 0 6px;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+  border-bottom: 1px solid var(--border-soft);
+}
+.mobile .titlebar::before { display: none; }
+.mobile .crumb { display: none; }
+.mobile .titlebar .icon-btn { width: 42px; height: 42px; border-radius: 10px; }
+.mobile #btn-theme { display: none; }
+.mobile .mode-switch,
+.mobile .sidebar-hidden .mode-switch { left: 50%; }
+.mobile .mode-btn { min-width: 76px; height: 34px; padding: 0 14px; font-size: 14px; gap: 6px; }
+.mobile .close-page {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+}
+.mobile .close-page span { display: none; }
+.mobile .close-page .ic { width: 20px; height: 20px; }
+.mobile .app.no-close.has-file .close-page { display: flex; }
+@media (max-width: 340px) {
+  .mobile .mode-btn { min-width: 64px; padding: 0 10px; }
+  .mobile .mode-ic { display: none; }
+}
+
+/* ---------- sidebar becomes a drawer ---------- */
+.mobile .sidebar {
+  position: fixed;
+  z-index: 900;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--sb-w);
+  margin-left: 0 !important;
+  padding-top: 8px;
+  transform: translateX(-104%);
+  transition: transform 0.26s cubic-bezier(0.3, 0.7, 0.2, 1);
+  box-shadow: var(--shadow);
+  border-radius: 0 16px 16px 0;
+}
+.mobile .app.drawer-open .sidebar { transform: none; }
+.drawer-scrim { display: none; }
+.mobile .drawer-scrim {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 890;
+  background: rgba(15, 14, 12, 0.36);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.mobile .app.drawer-open .drawer-scrim,
+.mobile .app.outline-open .drawer-scrim { opacity: 1; pointer-events: auto; }
+
+.mobile .sb-head { padding: 4px 10px; }
+.mobile .sb-workspace { height: 46px; font-size: 16px; }
+.mobile .sb-ws-icon { width: 26px; height: 26px; }
+.mobile .sb-tools { padding: 6px 10px 10px; gap: 4px; }
+.mobile .sb-search { height: 42px; border-radius: 10px; }
+.mobile .sb-search input { font-size: 16px; }
+.mobile .sb-tools .icon-btn { width: 42px; height: 42px; border-radius: 10px; }
+.mobile .sb-scroll { padding: 0 8px 16px; }
+.mobile .tr-row { height: 44px; font-size: 15.5px; border-radius: 9px; gap: 9px; }
+.mobile .tr-more { display: grid; width: 38px; height: 38px; margin-right: -4px; border-radius: 9px; }
+.mobile .sb-section-title { padding: 18px 10px 6px; font-size: 13px; }
+.mobile .sb-empty-box .btn { height: 44px; font-size: 15px; }
+.mobile .sb-foot { padding: 8px; }
+.mobile .sb-foot-btn { height: 46px; font-size: 15px; border-radius: 9px; }
+
+/* ---------- toolbars sit at the bottom, above the keyboard ---------- */
+.mobile .main { display: flex; flex-direction: column; }
+.mobile .toolbar {
+  order: 5;
+  height: auto;
+  min-height: 56px;
+  padding: 7px 8px;
+  gap: 8px;
+  border-bottom: 0;
+  border-top: 1px solid var(--border-soft);
+  background: var(--bg);
+}
+.mobile .tb-left { display: none; }
+.mobile .tb-pill { flex: 1 1 auto; margin-inline: auto; padding: 3px 4px; border-radius: 12px; }
+.mobile .tb-right { flex: none; min-width: 0; }
+.mobile .tb-btn { width: 42px; height: 42px; border-radius: 9px; }
+.mobile .tb-select { height: 42px; min-width: 118px; font-size: 14px; }
+.mobile .tb-sep { height: 22px; }
+.mobile .seg-btn { height: 40px; padding: 0 12px; font-size: 14px; }
+.mobile .seg.small .seg-btn { height: 36px; padding: 0 11px; font-size: 13px; }
+.mobile .tb-num { min-width: 30px; font-size: 14px; }
+/* desktop-only reading tools */
+.mobile #toolbar-read .tb-group:has([data-r='width']),
+.mobile #toolbar-read .tb-sep:has(+ .tb-group [data-r='width']) { display: none; }
+.mobile #toolbar-edit [data-id='indent'],
+.mobile #toolbar-edit [data-id='outdent'] { display: grid; }
+.mobile .app[data-editview='source'] #toolbar-edit .tb-pill::before { content: 'Raw Markdown'; }
+
+/* ---------- page ---------- */
+.mobile .content { scroll-padding-top: 12px; }
+.mobile .doc { padding: 22px 18px 45vh; }
+.mobile .banner { padding: 8px 10px 0; }
+.mobile .banner-inner { flex-wrap: wrap; }
+.mobile .banner-actions { width: 100%; justify-content: flex-end; }
+.mobile .banner .btn.xs { height: 36px; padding: 0 14px; font-size: 14px; }
+
+/* ---------- home screen ---------- */
+.mobile .welcome { min-height: 100%; place-items: start center; padding: 9vh 18px 40px; }
+.mobile .welcome-sub { margin-bottom: 26px; }
+.mobile .welcome-actions { grid-template-columns: 1fr; gap: 10px; }
+.mobile .welcome-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  row-gap: 2px;
+  align-items: center;
+  padding: 14px 16px;
+}
+.mobile .welcome-card .ic { grid-row: 1 / span 2; margin: 0; }
+.mobile .wc-t { font-size: 15px; }
+.mobile .welcome-recents { margin-top: 28px; }
+.mobile .wr-item { height: 46px; }
+.mobile .wr-name { overflow: hidden; text-overflow: ellipsis; }
+.mobile .wr-path { display: none; }
+
+/* ---------- outline as a bottom sheet ---------- */
+.mobile .outline { display: none !important; }
+.mobile .app.outline-open .outline:not(.empty) {
+  display: block !important;
+  visibility: visible;
+  pointer-events: auto;
+  position: fixed;
+  z-index: 950;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  width: auto;
+  max-height: 62%;
+  padding: 16px 10px 18px;
+  overflow-y: auto;
+  background: var(--bg-elev);
+  border-radius: 18px 18px 0 0;
+  box-shadow: var(--shadow);
+  animation: folio-sheet 0.22s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.mobile .outline-title { font-size: 13px; padding: 0 12px 10px; }
+.mobile .ol-item { padding: 11px 12px; font-size: 15.5px; border-radius: 9px; }
+.mobile .ol-item.lvl-2, .mobile .ol-item.lvl-3 { font-size: 15px; }
+@keyframes folio-sheet { from { transform: translateY(100%); } to { transform: none; } }
+
+/* ---------- menus, dialogs, find ---------- */
+.mobile .menu { max-width: calc(100vw - 16px); border-radius: 14px; padding: 6px; }
+.mobile .menu-item { height: 46px; font-size: 15.5px; border-radius: 9px; gap: 12px; }
+.mobile .menu-header { font-size: 12.5px; padding: 10px 12px 4px; }
+.mobile .style-menu .menu-item { height: 46px; }
+.mobile .modal { padding: 22px 20px 18px; border-radius: 18px; }
+.mobile .modal-title { font-size: 17px; }
+.mobile .modal-message { font-size: 15px; }
+.mobile .modal-input { height: 46px; font-size: 16px; border-radius: 10px; }
+.mobile .modal-actions .btn { height: 42px; padding: 0 18px; font-size: 15px; border-radius: 10px; }
+.mobile .modal-backdrop.top { padding-top: 10px; }
+.mobile .pal-input { height: 54px; }
+.mobile .pal-item { height: 48px; }
+.mobile .pal-list { max-height: 60vh; }
+
+.mobile .findbar { top: 8px; left: 8px; right: 8px; padding: 8px; }
+.mobile .find-row { gap: 2px; }
+.mobile .find-input { flex: 1; width: auto; height: 40px; min-width: 0; }
+.mobile .find-input input { font-size: 16px; }
+.mobile .find-count { min-width: 44px; }
+.mobile .findbar .icon-btn, .mobile .findbar .tb-btn { width: 38px; height: 38px; }
+.mobile .findbar .btn { height: 38px; }
+
+.mobile .toast { bottom: 76px; max-width: calc(100vw - 32px); font-size: 14px; padding: 11px 16px; border-radius: 12px; }
+
+.mobile .bubble { padding: 5px; border-radius: 12px; }
+.mobile .bb-btn { min-width: 38px; height: 38px; }
+.mobile .ctxbar .tb-btn.sm { width: 38px; height: 38px; }
+.mobile .ctxbar .tb-select.sm { height: 36px; }
+.mobile .slash-menu { width: min(320px, calc(100vw - 20px)); max-height: 44vh; }
+.mobile .slash-item { padding: 6px 8px; }
+
+/* taps leave :hover stuck on touch screens: only show it while pressed */
+@media (hover: none) {
+  .mobile .tr-row:hover:not(.active),
+  .mobile .tb-btn:hover:not(.active),
+  .mobile .icon-btn:hover:not(.active),
+  .mobile .menu-item:hover,
+  .mobile .wr-item:hover,
+  .mobile .sb-foot-btn:hover,
+  .mobile .sb-workspace:hover,
+  .mobile .ol-item:hover,
+  .mobile .bb-btn:hover:not(.active),
+  .mobile .seg-btn:hover:not(.active) { background: transparent; }
+  .mobile .welcome-card:hover { background: var(--bg); border-color: var(--border); }
+  .mobile .tr-row:active, .mobile .tb-btn:active, .mobile .icon-btn:active, .mobile .menu-item:active,
+  .mobile .wr-item:active, .mobile .sb-foot-btn:active, .mobile .ol-item:active, .mobile .bb-btn:active,
+  .mobile .welcome-card:active, .mobile .sb-workspace:active { background: var(--bg-hover); }
+}

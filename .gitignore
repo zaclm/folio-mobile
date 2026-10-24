@@ -5,3 +5,6 @@ release/
 release-test/
 *.pfx
 signing/*.pfx
+dist-mobile/
+*.jks
+*.keystore

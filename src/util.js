@@ -32,6 +32,11 @@ export function debounce(fn, ms) {
   return d;
 }
 
+// ---------- platform ----------
+// true in the phone build (vite.mobile.config.js defines __FOLIO_MOBILE__), false on desktop
+// eslint-disable-next-line no-undef
+export const IS_MOBILE = typeof __FOLIO_MOBILE__ !== 'undefined' && __FOLIO_MOBILE__ === true;
+
 // ---------- paths (works with \ and /) ----------
 export const isWin = navigator.userAgent.includes('Windows');
 export const SEP = isWin ? '\\' : '/';
@@ -82,6 +87,8 @@ export function isInside(child, parent) {
   return isWin ? c.toLowerCase().startsWith(p.toLowerCase()) : c.startsWith(p);
 }
 export function localUrl(absPath) {
+  // the phone app serves local images through its own bridge (see mobile/bridge.js)
+  if (window.folio?.localUrl) return window.folio.localUrl(absPath);
   return 'folio://local/' + encodeURIComponent(absPath);
 }
 
@@ -185,6 +192,8 @@ export function showMenu(items, { x, y, anchor, align = 'left', minWidth = 200, 
     b.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); it.action && it.action(); });
     el.appendChild(b);
   });
+  // phones: tapping a menu item must not steal focus from the editor (that would close the keyboard)
+  if (IS_MOBILE) el.addEventListener('mousedown', (e) => e.preventDefault());
   document.body.appendChild(el);
   const r = el.getBoundingClientRect();
   let left = x; let top = y;

@@ -10,9 +10,18 @@
     "dev": "vite",
     "build:renderer": "vite build",
     "start": "vite build && electron .",
-    "dist:win": "vite build && electron-builder --win nsis --x64 --publish never"
+    "dist:win": "vite build && electron-builder --win nsis --x64 --publish never",
+    "dev:mobile": "vite --config vite.mobile.config.js",
+    "build:mobile": "vite build --config vite.mobile.config.js",
+    "android:sync": "vite build --config vite.mobile.config.js && cap sync android",
+    "android:icons": "node mobile/scripts/make-icons.mjs"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/source-serif-4": "^5.3.1",
@@ -55,7 +64,7 @@
   "build": {
     "appId": "com.zac.folio",
     "productName": "Folio",
-    "copyright": "Copyright © 2026 Zac",
+    "copyright": "Copyright \u00a9 2026 Zac",
     "directories": {
       "output": "release",
       "buildResources": "build"

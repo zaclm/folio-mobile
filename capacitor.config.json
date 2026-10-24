@@ -1,0 +1,15 @@
+{
+  "appId": "com.zac.folio",
+  "appName": "Folio",
+  "webDir": "dist-mobile",
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable"
+    }
+  }
+}

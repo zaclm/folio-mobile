@@ -10,7 +10,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 import { createLowlight, common } from 'lowlight';
 import { Markdown } from 'tiptap-markdown';
-import { $, $$, h, icon, escapeHtml, showMenu, promptDialog, resolveFrom, localUrl, isAbsolute, isWin } from './util.js';
+import { $, $$, h, icon, escapeHtml, showMenu, promptDialog, resolveFrom, localUrl, isAbsolute, isWin, IS_MOBILE } from './util.js';
 import { LANG_LABELS, normLang } from './markdown.js';
 
 const lowlight = createLowlight(common);
@@ -272,7 +272,10 @@ export function createEditor({ element, getFilePath, onUpdate, onSelection, acti
         pluginKey: 'folioBubble',
         appendTo: () => document.body,
         updateDelay: 120,
-        options: { strategy: 'fixed', placement: 'top', offset: 8, flip: true, shift: { padding: 8 } },
+        // on phones Android's own copy/paste bar sits above the selection, so Folio's goes below it
+        options: IS_MOBILE
+          ? { strategy: 'fixed', placement: 'bottom', offset: 34, flip: true, shift: { padding: 8 } }
+          : { strategy: 'fixed', placement: 'top', offset: 8, flip: true, shift: { padding: 8 } },
         shouldShow: ({ editor: ed, state, from, to }) => {
           if (!ed.isEditable || from === to) return false;
           if (ed.isActive('codeBlock') || ed.isActive('image')) return false;

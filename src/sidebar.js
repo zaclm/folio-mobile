@@ -58,7 +58,7 @@ export function createSidebar(el, cb) {
     }
     if (tree) {
       items.push('sep',
-        { label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(tree.path) },
+        ...(cb.onReveal ? [{ label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(tree.path) }] : []),
         { label: 'Close folder', icon: 'X', action: cb.onCloseFolder });
     }
     showMenu(items, { anchor: e.currentTarget, minWidth: 240 });
@@ -192,7 +192,7 @@ export function createSidebar(el, cb) {
       { label: 'New folder here', icon: 'FolderPlus', action: () => cb.onNewFolder(p) },
       'sep',
       { label: 'Rename', icon: 'Pencil', action: () => cb.onRename(p, true) },
-      { label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(p) },
+      ...(cb.onReveal ? [{ label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(p) }] : []),
       'sep',
       { label: 'Delete folder', icon: 'Trash2', danger: true, action: () => cb.onDelete(p, true) },
     ] : [
@@ -202,7 +202,7 @@ export function createSidebar(el, cb) {
         { label: 'Duplicate', icon: 'Copy', action: () => cb.onDuplicate(p) },
       ]),
       { label: 'Copy path', icon: 'Copy', action: () => navigator.clipboard.writeText(p) },
-      { label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(p) },
+      ...(cb.onReveal ? [{ label: 'Show in File Explorer', icon: 'ExternalLink', action: () => cb.onReveal(p) }] : []),
       ...(row.dataset.recent ? [] : ['sep', { label: 'Delete', icon: 'Trash2', danger: true, action: () => cb.onDelete(p, false) }]),
     ];
     if (anchor) showMenu(items, { anchor, align: 'left', minWidth: 210 });
