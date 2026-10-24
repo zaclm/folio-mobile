@@ -219,3 +219,9 @@ html.mobile {
   .mobile .wr-item:active, .mobile .sb-foot-btn:active, .mobile .ol-item:active, .mobile .bb-btn:active,
   .mobile .welcome-card:active, .mobile .sb-workspace:active { background: var(--bg-hover); }
 }
+
+/* the outline is a sheet here, not a panel that stays on */
+.mobile #toolbar-read [data-r='outline'].active { background: transparent; box-shadow: none; }
+/* keep the edit tools visible next to the text-style picker */
+.mobile .tb-select { min-width: 0; max-width: 112px; }
+.mobile .tb-select-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
