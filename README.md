@@ -2,7 +2,19 @@
 
 A clean, calm Markdown reader and editor for Windows — styled like a document opened in Claude's side panel, edited like Notion or Google Docs.
 
-## Install
+## Folio on Android
+
+Download **Folio.apk** from the [latest release](https://github.com/zaclm/folio-mobile/releases/latest) on your phone and open it
+(allow your browser to install apps if Android asks). The first time you open a folder, Folio asks for
+**All files access** so it can edit your notes where they are.
+
+**Same notes on phone and PC:** keep your notes folder in sync with [Syncthing](https://syncthing.net)
+(free, no cloud: Syncthing on Windows, Syncthing-Fork from F-Droid/Play on Android), then open that folder in Folio on both.
+
+On the phone: ☰ opens your folder, **Read / Edit** at the top, tools at the bottom (above the keyboard while editing),
+the share button exports or prints to PDF, and Android's back gesture closes things step by step.
+
+## Install on Windows
 
 1. Run `Folio-Setup-1.0.0.exe`.
 2. Windows SmartScreen may say "Windows protected your PC" because the app isn't code-signed. Click **More info → Run anyway**.

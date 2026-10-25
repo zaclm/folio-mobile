@@ -1,6 +1,7 @@
 # Folio — guide for Claude Code
 
-Folio is a Windows desktop Markdown reader/editor (Electron + Vite, plain JS, no framework).
+Folio is a Markdown reader/editor (Vite, plain JS, no framework) that ships as a Windows desktop app
+(Electron) and an Android phone app (Capacitor). Both run the same renderer in `src/`.
 Owner: Zac. Keep it clean, calm and Notion/Claude-like. Files on disk are the source of truth — no database, no cloud.
 
 ## Commands
@@ -9,6 +10,33 @@ Owner: Zac. Keep it clean, calm and Notion/Claude-like. Files on disk are the so
 - `npm start` — build renderer + launch Electron
 - `npm run dev` + `FOLIO_DEV=1 npx electron .` — live-reload renderer from Vite dev server
 - `npm run dist:win` — Windows NSIS installer in `release/` (on Linux/macOS needs `wine` + 32-bit wine)
+
+## Phone app (Android)
+
+- `npm run dev:mobile` — phone UI in a browser (open DevTools device mode); file access is faked by `mobile/dev/mock-native.js`
+- `npm run android:sync` — build `dist-mobile/` and copy it into `android/`
+- APKs are built by GitHub Actions (`.github/workflows/android.yml`) on every push to `main` and published as a release.
+  Signing secrets: `FOLIO_KEYSTORE_B64` (base64 of the .jks) and `FOLIO_KEYSTORE_PASSWORD`. Never commit a keystore.
+- Build locally instead: Android Studio (or JDK 21 + Android SDK 36), `npm run android:sync`, then `cd android && ./gradlew assembleDebug`
+
+```
+vite.mobile.config.js  mobile build: swaps entry to mobile/entry.js, mobile CSP + viewport, defines __FOLIO_MOBILE__
+mobile/bridge.js       window.folio for the phone (same API as electron/preload.cjs) on top of FolioNative
+mobile/mobile.css      phone layout, everything scoped to html.mobile (drawer sidebar, bottom toolbars, outline sheet)
+android/app/src/main/java/com/zac/folio/FolioNativePlugin.java
+                       native side: folder/file pickers, read/write/rename/trash in place, Open with Folio,
+                       print (Save as PDF), share, edge-to-edge window + bar colours
+```
+
+Phone rules:
+- Files are edited in place by path (`/storage/emulated/0/...`), like the desktop app, so a folder synced with the PC
+  (Syncthing, FolderSync…) is the single source of truth. Android 11+ needs "All files access"; `ensureAccess()` asks for it.
+- Use `IS_MOBILE` from `util.js` for phone-only behaviour in `src/`; the desktop build must not change.
+- Android has no recursive file watcher: `bridge.js` polls (file every 2 s, folder structure every 6 s, and on resume).
+- Deleted items go to Folio's trash (`Android/data/com.zac.folio/files/Trash`), not a recycle bin.
+- `res/values/*.xml` comments must not contain `--` (invalid XML, breaks the Gradle build).
+- Capacitor injects its bridge as an inline script, so the mobile CSP allows `'unsafe-inline'` scripts.
+  Documents still can't run code because rendered markdown always goes through DOMPurify (security rule 4).
 
 ## Layout
 

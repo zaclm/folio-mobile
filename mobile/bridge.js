@@ -318,14 +318,17 @@ const api = {
 window.folio = api;
 
 // ------------------------------------------------------------------ app lifecycle
+/** Android back gesture: the newest handler that takes it wins; false means "leave the app". */
+function handleBack() {
+  for (const fn of [...listeners.back].reverse()) {
+    try { if (fn()) return true; } catch (e) { console.error(e); }
+  }
+  return false;
+}
+if (!isAndroid) api.simulateBack = handleBack; // for trying the phone UI in a browser
 if (isAndroid) {
   // save when the app goes to the background (it may never come back)
   App.addListener('pause', () => emit('flush'));
   App.addListener('resume', () => { refreshInfo(); pollNow(); });
-  App.addListener('backButton', () => {
-    for (const fn of [...listeners.back].reverse()) {
-      try { if (fn()) return; } catch (e) { console.error(e); }
-    }
-    App.minimizeApp();
-  });
+  App.addListener('backButton', () => { if (!handleBack()) App.minimizeApp(); });
 }

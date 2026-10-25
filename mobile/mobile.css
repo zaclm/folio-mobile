@@ -193,7 +193,7 @@ html.mobile {
 .mobile .findbar .icon-btn, .mobile .findbar .tb-btn { width: 38px; height: 38px; }
 .mobile .findbar .btn { height: 38px; }
 
-.mobile .toast { bottom: 76px; max-width: calc(100vw - 32px); font-size: 14px; padding: 11px 16px; border-radius: 12px; }
+.mobile .toast { bottom: 76px; width: max-content; max-width: calc(100vw - 32px); font-size: 14px; padding: 11px 16px; border-radius: 12px; }
 
 .mobile .bubble { padding: 5px; border-radius: 12px; }
 .mobile .bb-btn { min-width: 38px; height: 38px; }
