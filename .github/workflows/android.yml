@@ -2,6 +2,7 @@ name: Android APK
 
 # Builds Folio for Android on every push to main and publishes the APK as a GitHub release.
 # Download the newest one from: https://github.com/<owner>/<repo>/releases/latest
+# Rebuild without changing code: repo page -> Actions -> Android APK -> Run workflow -> Run workflow.
 on:
   push:
     branches: [main]
